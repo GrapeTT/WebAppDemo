@@ -51,7 +51,7 @@ public class User implements Serializable {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = "".equals(username) ? null : username;
     }
 
     public String getPassword() {
@@ -59,7 +59,7 @@ public class User implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = "".equals(password) ? null : password;
     }
 
     public String getRealname() {
@@ -67,7 +67,7 @@ public class User implements Serializable {
     }
 
     public void setRealname(String realname) {
-        this.realname = realname;
+        this.realname = "".equals(realname) ? null : realname;
     }
 
     public String getSex() {
@@ -75,7 +75,7 @@ public class User implements Serializable {
     }
 
     public void setSex(String sex) {
-        this.sex = sex;
+        this.sex = "".equals(sex) ? null : sex;
     }
 
     public String getGrade() {
@@ -83,7 +83,7 @@ public class User implements Serializable {
     }
 
     public void setGrade(String grade) {
-        this.grade = grade;
+        this.grade = "".equals(grade) ? null : grade;
     }
 
     public String getEmail() {
@@ -91,6 +91,6 @@ public class User implements Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = "".equals(email) ? null : email;
     }
 }
