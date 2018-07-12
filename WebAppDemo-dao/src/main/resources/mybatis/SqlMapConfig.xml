@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<!-- 全局setting配置，根据需要添加 -->
+    <settings>
+        <!-- 配置延迟加载
+             延迟加载:先从单表查询，需要时再从关联表关联查询（调用get方法时），单表查询比关联查询速度快，所以延迟加载能提高系统性能，减轻数据库压力
+            -->
+        <!-- 打开延迟加载开关 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 将积极加载改为消极加载（按需加载） -->
+        <setting name="aggressiveLazyLoading" value="false" />
+
+        <!-- 配置查询缓存
+             查询缓存:如果缓存中有数据，就不用再从数据库中获取，大大提高了系统性能
+             如果执行了commit操作（更新、插入、删除），则会清空缓存，这样才能保证数据为最新，避免脏读
+         -->
+        <!-- 一级缓存:sqlSession级别的缓存，在操作数据库时，需要构造sqlSession对象，在对象中有一个数据结构（HashMap）用于缓存数据，不同sqlSession的数据缓存区域（HashMap）是互不影响的
+             如果执行两次service调用查询相同信息，不走一级缓存，因为service方法结束，sqlSession就关闭了，一级缓存就清空了
+             Mybatis默认开启一级缓存
+         -->
+        <!-- 二级缓存:mapper级别的缓存（按namespace分缓存区域，数据结构也是HashMap），多个sqlSession去操作同一个mapper的sql语句（sqlSession关闭后才将数据写到二级缓存区域），多个sqlSession可以共用二级缓存，即二级缓存是跨sqlSession的
+             除了在此设置二级缓存总开关，还需要在各mapper.xml中开启二级缓存
+             还需要将对应的domain类实现序列化接口（Serializable），目的是为了将缓存数据取出执行反序列化操作，因为二级缓存数据介质多种多样，不一定存在内存中
+         -->
+        <setting name="cacheEnabled" value="true" />
+
+    </settings>
+	
+	<!-- 配置别名 -->
+	<!--<typeAliases>-->
+		<!--&lt;!&ndash; mybatis自动批量定义别名,别名默认是类名（首字母大小写都可以使用） &ndash;&gt;-->
+		<!--<package name="com.tao.domain"/>-->
+	<!--</typeAliases>-->
+
+	<!-- 配置mapper
+	由于使用spring和mybatis的整合包进行mapper扫描，这里不需要配置了。
+	 -->
+	<!-- <mappers>
+	</mappers> -->
+
+	<!-- 配置分页插件 -->
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageInterceptor">
+		</plugin>
+	</plugins>
+</configuration>

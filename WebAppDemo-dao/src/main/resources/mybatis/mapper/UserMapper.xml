@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tao.dao.UserDao" >
+
+    <!-- 开启本mapper的namespace下的二级缓存
+         可在不需要进行二级缓存的查询标签里设置useCache="false"禁用该查询的二级缓存;flushCache="false"表示禁止刷新缓存（清空缓存），默认为true，一般不需要设置为false
+         type:指定cache接口的实现类全路径，mybatis默认使用PerpetualCache（org.apache.ibatis.cache.impl.PerpetualCache）
+         flushInterval:指定缓存刷新（清空缓存）间隔时间
+     -->
+    <cache /><!-- type="" flushInterval="" -->
+
+    <!--设置User类和数据库中表的字段一一对应-->
+    <!-- resultMap可以实现延迟加载（使用association和collection），resultType不能 -->
+    <!-- 定义多个resultMap时，若有重复使用的resultMap，可使用extends继承，就不用重复写了 -->
+    <resultMap id="userResultMap" type="com.tao.domain.User" >
+        <!--
+        id:表中的唯一标识，若由多个来唯一标识，需配置多个id
+        column:表中字段名
+        property:domain对象中属性名
+        jdbcType可不配置
+        -->
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="realname" property="realname" jdbcType="VARCHAR" />
+        <result column="sex" property="sex" jdbcType="VARCHAR" />
+        <result column="grade" property="grade" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+
+        <!--实现延迟加载
+            select:指定延迟加载需要执行的statement的id，若是其他mapper中的，则需要在id前加其他mapper的namespace和‘.’
+            colum:该表中关联他表的字段名
+        <association/collection ...... select="" colum="" />
+        -->
+
+        <!-- 配置关联查询的信息，association用于映射关联查询的单个对象信息 -->
+        <!--<association property="" javaType="">-->
+            <!-- 与上面resultMap配置类似 -->
+            <!--<id column="" property="" jdbcType=""></id>-->
+            <!--<result column="" property="" jdbcType=""></result>-->
+        <!--</association>-->
+
+        <!-- 配置关联查询的信息，collection用于映射关联查询的集合信息 -->
+        <!-- property:集合名字  ofType:集合中元素的类型（domain全路径） -->
+        <!--<collection property="" ofType="">-->
+            <!--&lt;!&ndash; 与上面resultMap配置类似 &ndash;&gt;-->
+            <!--&lt;!&ndash;<id column="" property="" jdbcType=""></id>&ndash;&gt;-->
+            <!--&lt;!&ndash;<result column="" property="" jdbcType=""></result>&ndash;&gt;-->
+        <!--</collection>-->
+    </resultMap>
+
+    <!-- sql片段 -->
+    <sql id="selectUser_By_Grades">
+        <!--
+        collection:集合名字
+        item:遍历时生成对象的名字
+        open:开始遍历时拼接的串
+        close:结束遍历时拼接的串
+        separator:遍历两个对象中间需要拼接的串
+         -->
+        <foreach collection="grades" item="grade" separator="or">
+            grade = #{grade}
+        </foreach>
+    </sql>
+
+    <select id="selectUserById" parameterType="Integer" resultMap="userResultMap">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
+
+    <select id="selectUserByUsername" parameterType="String" resultMap="userResultMap">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
+
+    <select id="selectUserByGrades" parameterType="com.tao.domain.UserPackage" resultType="com.tao.domain.User">
+        SELECT * FROM user
+        <where>
+            <include refid="selectUser_By_Grades"></include>
+        </where>
+    </select>
+
+    <insert id="insertUser" parameterType="com.tao.domain.User">
+        INSERT INTO user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="realname != null">
+                realname,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="grade != null">
+                grade,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="username != null">
+                #{username},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="realname != null">
+                #{realname},
+            </if>
+            <if test="sex != null">
+                #{sex},
+            </if>
+            <if test="grade != null">
+                #{grade},
+            </if>
+            <if test="email != null">
+                #{email},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteUserByUsername" parameterType="String">
+        DELETE FROM user WHERE username = #{username}
+    </delete>
+
+    <update id="updateUser" parameterType="com.tao.domain.UserPackage">
+        UPDATE user
+        <set>
+            <if test="user.username != null">
+                username = #{user.username},
+            </if>
+            <if test="user.password != null">
+                password = #{user.password},
+            </if>
+            <if test="user.realname != null">
+                realname = #{user.realname},
+            </if>
+            <if test="user.sex != null">
+                sex = #{user.sex},
+            </if>
+            <if test="user.grade != null">
+                grade = #{user.grade},
+            </if>
+            <if test="user.email != null">
+                email = #{user.email},
+            </if>
+        </set>
+        WHERE username = #{oldUsername}
+    </update>
+</mapper>
