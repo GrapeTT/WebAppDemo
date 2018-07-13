@@ -17,11 +17,14 @@
     <!-- 显示错误信息 -->
     <div>
         <c:if test="${allErrors != null }">
-           <c:forEach items="${allErrors }" var="error">
-                <font color="red">
-                    ${ error.defaultMessage}<br/>
-                </font>
-           </c:forEach>
+           <%--<c:forEach items="${allErrors }" var="error">--%>
+                <%--<font color="red">--%>
+                    <%--${ error.defaultMessage}<br/>--%>
+                <%--</font>--%>
+           <%--</c:forEach>--%>
+            <font color="red">
+                ${ allErrors[0].defaultMessage}<br/>
+            </font>
         </c:if>
     </div>
     <form action="/user/register" method="post">
